@@ -34,8 +34,5 @@ class TestTextNode(unittest.TestCase):
         node2 = TextNode("Image", TextType.IMAGE, "https://coolimage.com")
         self.assertNotEqual(node, node2)
 
-    
-
-
 if __name__ == "__main__":
     unittest.main()
