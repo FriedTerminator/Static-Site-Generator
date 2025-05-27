@@ -1,8 +1,9 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode
+from leafnode import LeafNode
 
 def main():
-    example_node = HTMLNode(
+    example_node = LeafNode(
         tag="a",
         value="Google",
         props={
@@ -12,7 +13,7 @@ def main():
     )
 
     print(example_node)
-    print("HTML Attributes:", example_node.props_to_html())
+    print("Leaf Attributes:", example_node.to_html())
 
 if __name__ == "__main__":
     main()
