@@ -18,13 +18,13 @@ class TestParentNode(unittest.TestCase):
         child_node = LeafNode("p", "This is great")
         parent_node2 = ParentNode("h2", [child_node])
         parent_node = ParentNode("h1", [parent_node2])
-        self.assertEquals(parent_node.to_html(), "<h1><h2><p>This is great</p></h2></h1>")
+        self.assertEqual(parent_node.to_html(), "<h1><h2><p>This is great</p></h2></h1>")
 
     def test_to_html_mixed(self):
         child_node = LeafNode("p", "This is great")
         parent_node2 = ParentNode("h2", [child_node])
         parent_node = ParentNode("h1", [child_node, parent_node2])
-        self.assertEquals(parent_node.to_html(), "<h1><p>This is great</p><h2><p>This is great</p></h2></h1>")
+        self.assertEqual(parent_node.to_html(), "<h1><p>This is great</p><h2><p>This is great</p></h2></h1>")
 
     def test_no_tag(self):
         child = LeafNode("p", "content")

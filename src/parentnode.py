@@ -2,6 +2,8 @@ from htmlnode import HTMLNode
 
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
+        if not tag:
+            raise ValueError("A tag is required for a parent node")
         if not isinstance(children, list):
             children = [children]
         super().__init__(tag=tag,value =None, children=children, props=props)
