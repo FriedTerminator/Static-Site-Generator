@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
+from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
 
 
 class TestTextNode(unittest.TestCase):
@@ -60,6 +60,28 @@ class TestTextNode(unittest.TestCase):
             "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
         )
         self.assertListEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], matches)
+
+    def test_split_node_image(self):
+        node = TextNode(
+            "This is a text with an image ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual([TextNode("This is a text with an image ", TextType.TEXT),
+                             TextNode("to boot dev", TextType.IMAGE, "https://www.boot.dev"),
+                             TextNode(" and ", TextType.TEXT),
+                             TextNode("to youtube", TextType.IMAGE, "https://www.youtube.com/@bootdotdev")], new_nodes)
+        
+    def test_split_node_link(self):
+        node = TextNode(
+            "This is a text with an image [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual([TextNode("This is a text with an image ", TextType.TEXT),
+                             TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                             TextNode(" and ", TextType.TEXT),
+                             TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev")], new_nodes)
 
 if __name__ == "__main__":
     unittest.main()
