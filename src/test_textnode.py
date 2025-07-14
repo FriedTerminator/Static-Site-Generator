@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
+from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnode
 
 
 class TestTextNode(unittest.TestCase):
@@ -37,17 +37,17 @@ class TestTextNode(unittest.TestCase):
     def test_split_delimiter_bold(self):
         node = TextNode("Text with **bold** word", TextType.TEXT)
         nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertListEqual(nodes, [TextNode("Text with", TextType.TEXT), TextNode("bold", TextType.BOLD), TextNode("word", TextType.TEXT)])
+        self.assertListEqual(nodes, [TextNode("Text with ", TextType.TEXT), TextNode("bold", TextType.BOLD), TextNode(" word", TextType.TEXT)])
 
     def test_split_delimiter_italic(self):
-        node = TextNode("Text with _italic word", TextType.TEXT)
+        node = TextNode("Text with _italic_ word", TextType.TEXT)
         nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
-        self.assertListEqual(nodes, [TextNode("Text with", TextType.TEXT), TextNode("italic", TextType.ITALIC), TextNode("word", TextType.TEXT)])
+        self.assertListEqual(nodes, [TextNode("Text with ", TextType.TEXT), TextNode("italic", TextType.ITALIC), TextNode(" word", TextType.TEXT)])
 
     def test_split_delimiter_italic(self):
         node = TextNode("Text with `code` word", TextType.TEXT)
         nodes = split_nodes_delimiter([node], "`", TextType.CODE)
-        self.assertListEqual(nodes, [TextNode("Text with", TextType.TEXT), TextNode("code", TextType.CODE), TextNode("word", TextType.TEXT)])
+        self.assertListEqual(nodes, [TextNode("Text with ", TextType.TEXT), TextNode("code", TextType.CODE), TextNode(" word", TextType.TEXT)])
 
     def test_extract_markdown_images(self):
         matches = extract_markdown_images(
@@ -74,14 +74,64 @@ class TestTextNode(unittest.TestCase):
         
     def test_split_node_link(self):
         node = TextNode(
-            "This is a text with an image [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            "This is a text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
             TextType.TEXT,
         )
         new_nodes = split_nodes_link([node])
-        self.assertListEqual([TextNode("This is a text with an image ", TextType.TEXT),
+        self.assertListEqual([TextNode("This is a text with a link ", TextType.TEXT),
                              TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
                              TextNode(" and ", TextType.TEXT),
                              TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev")], new_nodes)
+        
+    def test_text_to_textnode_bold(self):
+        text = "This text has a **bold** word"
+        result = text_to_textnode(text)
+        self.assertListEqual([TextNode("This text has a ", TextType.TEXT), TextNode("bold", TextType.BOLD), TextNode(" word", TextType.TEXT)], result)
+
+    def test_text_to_textnode_italic(self):
+        text = "This text has a _italic_ word"
+        result = text_to_textnode(text)
+        self.assertListEqual([TextNode("This text has a ", TextType.TEXT), TextNode("italic", TextType.ITALIC), TextNode(" word", TextType.TEXT)], result)
+
+    def test_text_to_textnode_code(self):
+        text = "This text has a `code` word"
+        result = text_to_textnode(text)
+        self.assertListEqual([TextNode("This text has a ", TextType.TEXT), TextNode("code", TextType.CODE), TextNode(" word", TextType.TEXT)], result)
+
+    def test_text_to_textnode_all_delimiters(self):
+        text = "This text has a **bold** and _italic_ and `code` word"
+        result = text_to_textnode(text)
+        self.assertListEqual([TextNode("This text has a ", TextType.TEXT), TextNode("bold", TextType.BOLD), TextNode(" and ", TextType.TEXT), TextNode("italic", TextType.ITALIC), TextNode(" and ", TextType.TEXT), TextNode("code", TextType.CODE), TextNode(" word", TextType.TEXT)], result)
+
+    def test_text_to_textnode_image(self):
+        text = "This is a text with an image ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)"
+        result = text_to_textnode(text)
+        self.assertListEqual([TextNode("This is a text with an image ", TextType.TEXT),
+                             TextNode("to boot dev", TextType.IMAGE, "https://www.boot.dev"),
+                             TextNode(" and ", TextType.TEXT),
+                             TextNode("to youtube", TextType.IMAGE, "https://www.youtube.com/@bootdotdev")], result)
+        
+    def test_text_to_textnode_link(self):
+        text = "This is a text with a link [to google](https://www.google.com) and [to steam](https://www.steam.com)"
+        result = text_to_textnode(text)
+        self.assertListEqual([TextNode("This is a text with a link ", TextType.TEXT),
+                             TextNode("to google", TextType.LINK, "https://www.google.com"),
+                             TextNode(" and ", TextType.TEXT),
+                             TextNode("to steam", TextType.LINK, "https://www.steam.com")], result)
+        
+    def test_text_to_textnode_with_all(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        result = text_to_textnode(text)
+        self.assertListEqual([TextNode("This is ", TextType.TEXT),
+                            TextNode("text", TextType.BOLD),
+                            TextNode(" with an ", TextType.TEXT),
+                            TextNode("italic", TextType.ITALIC),
+                            TextNode(" word and a ", TextType.TEXT),
+                            TextNode("code block", TextType.CODE),
+                            TextNode(" and an ", TextType.TEXT),
+                            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                            TextNode(" and a ", TextType.TEXT),
+                            TextNode("link", TextType.LINK, "https://boot.dev")], result)
 
 if __name__ == "__main__":
     unittest.main()
