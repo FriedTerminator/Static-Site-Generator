@@ -1,6 +1,7 @@
 import unittest
 
-from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnode, markdown_to_blocks
+from textnode import TextNode, TextType, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnode
+from blocktype import markdown_to_blocks
 
 
 class TestTextNode(unittest.TestCase):
@@ -135,14 +136,14 @@ class TestTextNode(unittest.TestCase):
         
     def test_markdown_to_blocks(self):
         md = """
-            This is **bolded** paragraph
+This is **bolded** paragraph
 
-            This is another paragraph with _italic_ text and `code` here
-            This is the same paragraph on a new line
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
 
-            - This is a list
-            - with items
-            """
+- This is a list
+- with items
+"""
         blocks = markdown_to_blocks(md)
         self.assertEqual(
             blocks,
@@ -155,8 +156,8 @@ class TestTextNode(unittest.TestCase):
 
     def test_markdown_to_blocks_single(self):
         md = """
-            This is a single line
-            """
+This is a single line
+"""
         blocks = markdown_to_blocks(md)
         self.assertEqual(
             blocks,
@@ -172,15 +173,15 @@ class TestTextNode(unittest.TestCase):
     
     def test_markdown_to_blocks_multiple_paragraphs(self):
         md = """
-            First Paragraph
+First Paragraph
 
-            Second Paragraph
-            with two lines
+Second Paragraph
+with two lines
 
-            Third Paragraph
-            with
-            three lines
-            """
+Third Paragraph
+with
+three lines
+"""
         blocks = markdown_to_blocks(md)
         self.assertEqual(
             blocks,
