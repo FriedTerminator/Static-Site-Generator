@@ -1,5 +1,6 @@
 import re
 from blocktype import markdown_to_html_node
+import os
 
 def extract_title(markdown):
     header = re.findall("\# (.*?)", markdown)
@@ -23,7 +24,10 @@ def generate_page(from_path, template_path, dest_path):
     updated_html = template_content.replace("{{ Title }}", title)
     updated_html = updated_html.replace("{{ Content }}", html)
 
+    directories = os.path.dirname(dest_path)
 
+    if directories and not os.path.exists(directories):
+        os.makedirs(directories)
 
-
-    
+    with open(dest_path, 'w') as file:
+        file.write(updated_html)

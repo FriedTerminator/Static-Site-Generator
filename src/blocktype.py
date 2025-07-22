@@ -73,7 +73,13 @@ def create_html_node_for_block_type(block, block_type):
         return ParentNode("p", children)
     
     if block_type == BlockType.HEADING:
-        length = len(re.match(r"#+",block).group(1))
+        match = re.match(r"(#+)", block)
+
+        if not match:
+            raise Exception(f"Invalid heading format: {block}")
+        
+        length = len(match.group(1))
+
         children = [text_node_to_html_node(node) for node in text_to_textnode(block)]
         return ParentNode(f"h{length}", children)
     
