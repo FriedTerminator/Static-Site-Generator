@@ -73,14 +73,15 @@ def create_html_node_for_block_type(block, block_type):
         return ParentNode("p", children)
     
     if block_type == BlockType.HEADING:
-        match = re.match(r"(#+)", block)
+        match = re.match(r"(#+) (.*)", block)
 
         if not match:
             raise Exception(f"Invalid heading format: {block}")
         
         length = len(match.group(1))
+        heading_text = match.group(2)
 
-        children = [text_node_to_html_node(node) for node in text_to_textnode(block)]
+        children = [text_node_to_html_node(node) for node in text_to_textnode(heading_text)]
         return ParentNode(f"h{length}", children)
     
     if block_type == BlockType.CODE:
@@ -90,8 +91,12 @@ def create_html_node_for_block_type(block, block_type):
         return ParentNode("pre", [html_node])
     
     if block_type == BlockType.QUOTE:
-        fixed_block = re.sub(r"\>", "", block)
-        children = [text_node_to_html_node(node) for node in text_to_textnode(fixed_block)]
+        lines = block.split("\n")
+
+        quote_lines = [line.lstrip("> ").strip() for line in lines if not line.strip().startswith("--")]
+        quote = " ".join(quote_lines)
+
+        children = [text_node_to_html_node(node) for node in text_to_textnode(quote)]
         return ParentNode("blockquote", children)
     
     if block_type == BlockType.UNORDERED_LIST:
