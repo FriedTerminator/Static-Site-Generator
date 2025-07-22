@@ -34,8 +34,7 @@ def generate_page(from_path, template_path, dest_path, basepath):
     with open(dest_path, 'w') as file:
         file.write(updated_html)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
-    root_dir_path_content = "content"
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath, root_dir_path_content):
     content_list = os.listdir(dir_path_content)
 
     for content in content_list:
@@ -46,7 +45,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
         dest_path = os.path.join(dest_dir_path, rel_path)
 
         if os.path.isdir(full_path):
-            generate_pages_recursive(full_path, template_path, dest_dir_path, basepath)
+            generate_pages_recursive(full_path, template_path, dest_dir_path, basepath, root_dir_path_content)
 
         if os.path.isfile(full_path) and full_path.endswith(".md"):
             new_dest_path = dest_path.replace(".md", ".html")

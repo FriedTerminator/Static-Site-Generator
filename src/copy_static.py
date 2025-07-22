@@ -18,12 +18,12 @@ def copy_recursive(src, dest):
 
 def copy_static():
     static_path = 'static'
-    public_path = 'public'
+    docs_path = 'docs'
 
     if not os.path.exists(static_path):
         raise Exception("Source directory does not exist")
     
-    if os.path.exists(public_path):
-        shutil.rmtree(public_path)
+    if os.path.exists(docs_path):
+        shutil.rmtree(docs_path)
     
-    copy_recursive(static_path, public_path)
+    copy_recursive(static_path, docs_path)
